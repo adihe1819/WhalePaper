@@ -1,0 +1,60 @@
+WhalePaper third-party notices
+==============================
+
+WhalePaper itself contains no third-party runtime libraries.
+
+Runtime platform
+----------------
+Microsoft .NET Framework 4.8 and Windows Presentation Foundation (WPF)
+are Windows components by Microsoft Corporation.
+Video playback uses Windows Media Foundation, a Windows component.
+
+Development/build tools (not shipped to users)
+----------------------------------------------
+Inno Setup 6.0.5 (https://jrsoftware.org/isinfo.php) was used to build the
+installer. Inno Setup is not included in the installed application.
+innoextract 1.9 was used only to unpack the compiler for local building.
+
+Fonts
+-----
+The application uses fonts already installed with Windows
+(Microsoft YaHei UI, Segoe UI, Segoe MDL2 Assets).
+
+Images
+------
+The application icon and default wallpaper are original assets generated
+for this project. The sample media files under samples/ are test-only and
+are not included in the installer.
+
+No third-party media or runtime libraries are bundled with the application.
+
+Project license
+---------------
+WhalePaper code and original assets are licensed under MIT; see LICENSE.
+
+Installer translation
+---------------------
+installer/ChineseSimplified.isl is adapted from the Inno Setup Chinese
+Simplified Translation by Zhenghan Yang (Kira) / kirakira.
+Source: https://github.com/kira-96/Inno-Setup-Chinese-Simplified-Translation
+License: MIT, Copyright (c) 2019 - 2020 kirakira.
+Full notice: LICENSES/Inno-Setup-Chinese-Simplified-Translation.txt
+Modifications: UTF-8 BOM retained; message keys aligned with Inno Setup
+6.0.5; two file-overwrite messages translated for that schema.
+The upstream translator attribution in the language file is preserved.
+
+Installer license
+-----------------
+The published installer is built with Inno Setup 6.0.5.
+Copyright (C) 1997-2020 Jordan Russell. All rights reserved.
+Portions Copyright (C) 2000-2020 Martijn Laan. All rights reserved.
+https://jrsoftware.org/
+Full version-matched license: LICENSES/Inno-Setup-6.0.5.txt
+Generated setup executables retain Inno Setup's original notices.
+
+Technical references
+--------------------
+Media Foundation declarations follow the Windows SDK interfaces. The raised
+desktop placement is independently implemented from Explorer protocol details
+discussed publicly by Microsoft and Lively developers. No Lively source code
+or binaries are distributed. Reference links are in docs/architecture.md.

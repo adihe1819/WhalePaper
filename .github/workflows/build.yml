@@ -1,0 +1,42 @@
+name: Windows build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+      DOTNET_NOLOGO: "1"
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Build application
+        shell: pwsh
+        run: dotnet build ./src/WhalePaper/WhalePaper.csproj -c Release --disable-build-servers
+
+      - name: Build desktop smoke harness
+        shell: pwsh
+        run: dotnet build ./tests/DesktopPlaybackSmoke.csproj -c Release --disable-build-servers
+
+      - name: Check portable packaging
+        shell: pwsh
+        run: ./build.ps1 -SkipInstaller
+
+      # CI has no representative interactive desktop. Do not run media/desktop
+      # probes here or present this build result as playback/icon validation.
+

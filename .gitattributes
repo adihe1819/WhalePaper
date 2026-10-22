@@ -1,0 +1,26 @@
+* text=auto
+
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.sh text eol=lf
+*.py text eol=lf
+*.cs text eol=crlf
+*.xaml text eol=crlf
+*.csproj text eol=crlf
+*.manifest text eol=crlf
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.iss text eol=crlf
+*.isl text eol=crlf
+*.txt text eol=crlf
+LICENSE text eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.bmp binary
+

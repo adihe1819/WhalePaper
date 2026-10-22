@@ -1,0 +1,647 @@
+<Window x:Class="WhalePaper.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:conv="clr-namespace:WhalePaper.Converters"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        Title="鲸鱼壁纸"
+        Width="1140" Height="800" MinWidth="940" MinHeight="620"
+        WindowStyle="None" ResizeMode="CanResize" AllowsTransparency="False"
+        Background="{DynamicResource BgBrush}"
+        WindowStartupLocation="CenterScreen"
+        UseLayoutRounding="True" SnapsToDevicePixels="True"
+        Icon="pack://application:,,,/Assets/app.ico"
+        Closing="Window_Closing"
+        AllowDrop="True" DragOver="Window_DragOver" Drop="Window_Drop">
+
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome CaptionHeight="0" ResizeBorderThickness="6"
+                            GlassFrameThickness="0" CornerRadius="0"
+                            UseAeroCaptionButtons="False" />
+    </shell:WindowChrome.WindowChrome>
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/Theme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+            <conv:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVisibility" />
+            <conv:NullToVisibilityConverter x:Key="NullToVisibility" />
+            <conv:ZeroCountToVisibilityConverter x:Key="ZeroCountToVisibility" />
+            <conv:EmptyStringToVisibilityConverter x:Key="EmptyStringToVisibility" />
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Border x:Name="WindowBorder" Background="{StaticResource BgBrush}"
+            BorderBrush="#1B2B34" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="52" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="38" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="208" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- custom title bar -->
+            <Border Grid.Row="0" Grid.ColumnSpan="2" Background="{StaticResource TopBarBrush}"
+                    BorderBrush="{StaticResource BorderSoftBrush}" BorderThickness="0,0,0,1"
+                    MouseLeftButtonDown="TopBar_MouseLeftButtonDown">
+                <Grid Margin="16,0,10,0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Border Width="30" Height="30" CornerRadius="8" Background="#10292A"
+                                Margin="0,0,10,0">
+                            <Image Source="pack://application:,,,/Assets/app.png"
+                                   Stretch="UniformToFill" />
+                        </Border>
+                        <TextBlock Text="鲸鱼壁纸" FontFamily="{StaticResource UiFont}"
+                                   FontSize="15" FontWeight="SemiBold"
+                                   Foreground="{StaticResource TextBrush}" VerticalAlignment="Center" />
+                        <Border Margin="12,0,0,0" Padding="8,3" CornerRadius="10"
+                                Background="#122A25" VerticalAlignment="Center">
+                            <TextBlock Text="本地离线" FontFamily="{StaticResource UiFont}"
+                                       FontSize="10" Foreground="{StaticResource AccentBrush}" />
+                        </Border>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
+                                VerticalAlignment="Center">
+                        <Button Content="&#xE921;" Style="{StaticResource WindowButton}"
+                                Click="MinimizeButton_Click" ToolTip="最小化" />
+                        <Button x:Name="MaximizeButton" Content="&#xE922;"
+                                Style="{StaticResource WindowButton}"
+                                Click="MaximizeButton_Click" ToolTip="最大化" />
+                        <Button Content="&#xE8BB;" Style="{StaticResource CloseWindowButton}"
+                                Click="CloseButton_Click" ToolTip="关闭到托盘" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- sidebar -->
+            <Border Grid.Row="1" Grid.Column="0" Background="{StaticResource SidebarBrush}"
+                    BorderBrush="{StaticResource BorderSoftBrush}" BorderThickness="0,0,1,0">
+                <Grid Margin="12,18,12,14">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="浏览" Margin="13,0,0,7" Style="{StaticResource MutedText}"
+                               FontSize="10" FontWeight="SemiBold" />
+
+                    <ListBox x:Name="NavList" Grid.Row="1" Style="{StaticResource NavList}"
+                             SelectedIndex="{Binding ElementName=Pages, Path=SelectedIndex, Mode=TwoWay}">
+                        <ListBoxItem>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE8B7;" FontFamily="Segoe MDL2 Assets"
+                                           FontSize="16" Width="28" VerticalAlignment="Center"
+                                           Foreground="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=Foreground}" />
+                                <TextBlock Text="壁纸库" FontFamily="{StaticResource UiFont}"
+                                           FontSize="13" VerticalAlignment="Center"
+                                           Foreground="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=Foreground}" />
+                            </StackPanel>
+                        </ListBoxItem>
+                        <ListBoxItem>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets"
+                                           FontSize="16" Width="28" VerticalAlignment="Center"
+                                           Foreground="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=Foreground}" />
+                                <TextBlock Text="设置" FontFamily="{StaticResource UiFont}"
+                                           FontSize="13" VerticalAlignment="Center"
+                                           Foreground="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=Foreground}" />
+                            </StackPanel>
+                        </ListBoxItem>
+                        <ListBoxItem>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE946;" FontFamily="Segoe MDL2 Assets"
+                                           FontSize="16" Width="28" VerticalAlignment="Center"
+                                           Foreground="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=Foreground}" />
+                                <TextBlock Text="关于" FontFamily="{StaticResource UiFont}"
+                                           FontSize="13" VerticalAlignment="Center"
+                                           Foreground="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=Foreground}" />
+                            </StackPanel>
+                        </ListBoxItem>
+                    </ListBox>
+
+                    <StackPanel Grid.Row="2" Margin="10,16,10,0">
+                        <Border Background="#0C211F" CornerRadius="10" Padding="11,9"
+                                BorderBrush="#1A3A35" BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock Text="100% 本地运行" FontFamily="{StaticResource UiFont}"
+                                           FontSize="11" FontWeight="SemiBold"
+                                           Foreground="{StaticResource AccentBrush}" />
+                                <TextBlock Text="壁纸和配置只保存在这台电脑"
+                                           FontFamily="{StaticResource UiFont}" FontSize="10"
+                                           Foreground="{StaticResource MutedBrush}" Margin="0,3,0,0"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                        <TextBlock Text="{Binding AppVersion, StringFormat=WhalePaper v{0}}"
+                                   FontFamily="{StaticResource UiFont}" FontSize="10"
+                                   Foreground="#58727A" Margin="3,12,0,0" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- content -->
+            <TabControl x:Name="Pages" Grid.Row="1" Grid.Column="1"
+                        Style="{StaticResource HiddenTabControl}" SelectedIndex="0">
+                <TabItem Header="壁纸库">
+                    <Grid Margin="26,22,26,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0" Margin="0,0,0,20">
+                            <StackPanel>
+                                <TextBlock Text="我的壁纸" Style="{StaticResource H1}" />
+                                <StackPanel Orientation="Horizontal" Margin="1,4,0,0">
+                                    <TextBlock Text="{Binding LibraryCountText}" Style="{StaticResource MutedText}" />
+                                    <TextBlock Text="  ·  全部保存在本机" Style="{StaticResource MutedText}" />
+                                </StackPanel>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
+                                        VerticalAlignment="Center">
+                                <Grid Width="224">
+                                    <TextBox x:Name="SearchBox" Style="{StaticResource FlatTextBox}"
+                                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                                             Padding="30,8,10,8" />
+                                    <TextBlock Text="&#xE721;" FontFamily="Segoe MDL2 Assets"
+                                               FontSize="14" Foreground="#58727A"
+                                               Margin="11,0,0,0" VerticalAlignment="Center"
+                                               IsHitTestVisible="False" />
+                                    <TextBlock Text="搜索壁纸..." FontFamily="{StaticResource UiFont}"
+                                               FontSize="12" Foreground="#58727A"
+                                               Margin="31,0,0,0" VerticalAlignment="Center"
+                                               IsHitTestVisible="False">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Text, ElementName=SearchBox}" Value="">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Grid>
+                                <Button Content="+  导入壁纸" Style="{StaticResource PrimaryButton}"
+                                        Margin="10,0,0,0" Click="ImportButton_Click" />
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="306" />
+                            </Grid.ColumnDefinitions>
+
+                            <Grid Grid.Column="0" Margin="0,0,10,0">
+                                <ListBox x:Name="WallpaperList" ItemsSource="{Binding FilteredItems}"
+                                         SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                                         Style="{StaticResource CardList}"
+                                         Margin="0,0,0,0">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border x:Name="Card" Width="232" Height="192"
+                                                    CornerRadius="12" BorderThickness="1"
+                                                    ClipToBounds="True">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="Background" Value="{StaticResource CardBrush}" />
+                                                        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="Background" Value="{StaticResource CardHoverBrush}" />
+                                                                <Setter Property="BorderBrush" Value="#2E4B56" />
+                                                            </Trigger>
+                                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}" Value="True">
+                                                                <Setter Property="Background" Value="#172E34" />
+                                                                <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="122" />
+                                                        <RowDefinition Height="*" />
+                                                    </Grid.RowDefinitions>
+                                                    <Border Grid.Row="0" CornerRadius="11,11,0,0"
+                                                            Background="#091218" ClipToBounds="True">
+                                                        <Grid>
+                                                            <Image Source="{Binding Thumbnail}"
+                                                                   Stretch="UniformToFill"
+                                                                   RenderOptions.BitmapScalingMode="HighQuality" />
+                                                            <Border Background="#C40A151B" CornerRadius="6"
+                                                                    Padding="7,3" Margin="8"
+                                                                    HorizontalAlignment="Left" VerticalAlignment="Top">
+                                                                <TextBlock Text="{Binding KindLabel}"
+                                                                           FontFamily="{StaticResource UiFont}"
+                                                                           FontSize="10" Foreground="#D7E9E6" />
+                                                            </Border>
+                                                            <Border Background="#D91B5B50" CornerRadius="6"
+                                                                    Padding="7,3" Margin="8"
+                                                                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                                                                    Visibility="{Binding IsCurrent, Converter={StaticResource BoolToVisibility}}">
+                                                                <TextBlock Text="使用中" FontFamily="{StaticResource UiFont}"
+                                                                           FontSize="10" FontWeight="SemiBold"
+                                                                           Foreground="{StaticResource AccentBrush}" />
+                                                            </Border>
+                                                            <Border Width="32" Height="32" CornerRadius="16"
+                                                                    Background="#CC081418" HorizontalAlignment="Center"
+                                                                    VerticalAlignment="Center"
+                                                                    Visibility="{Binding IsDynamic, Converter={StaticResource BoolToVisibility}}">
+                                                                <TextBlock Text="&#xE768;" FontFamily="Segoe MDL2 Assets"
+                                                                           FontSize="12" Foreground="White"
+                                                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                            </Border>
+                                                        </Grid>
+                                                    </Border>
+                                                    <StackPanel Grid.Row="1" Margin="12,10,12,0">
+                                                        <TextBlock Text="{Binding DisplayName}"
+                                                                   Style="{StaticResource BaseText}"
+                                                                   FontWeight="SemiBold" FontSize="12"
+                                                                   TextTrimming="CharacterEllipsis" />
+                                                        <TextBlock Text="{Binding SubtitleText}"
+                                                                   Style="{StaticResource MutedText}"
+                                                                   FontSize="10.5" Margin="0,4,0,0"
+                                                                   TextTrimming="CharacterEllipsis" />
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                                <Grid Visibility="{Binding Items.Count, Converter={StaticResource ZeroCountToVisibility}}"
+                                      HorizontalAlignment="Center" VerticalAlignment="Center"
+                                      IsHitTestVisible="True">
+                                    <StackPanel HorizontalAlignment="Center">
+                                        <Border Width="76" Height="76" CornerRadius="22"
+                                                Background="#102720" HorizontalAlignment="Center">
+                                            <TextBlock Text="&#xE8B7;" FontFamily="Segoe MDL2 Assets"
+                                                       FontSize="30" Foreground="{StaticResource AccentBrush}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <TextBlock Text="壁纸库还是空的" Style="{StaticResource H2}"
+                                                   HorizontalAlignment="Center" Margin="0,18,0,5" />
+                                        <TextBlock Text="把图片、GIF 或视频拖进来，或者点击导入"
+                                                   Style="{StaticResource MutedText}" HorizontalAlignment="Center" />
+                                        <Button Content="选择本地壁纸" Style="{StaticResource PrimaryButton}"
+                                                HorizontalAlignment="Center" Margin="0,18,0,0"
+                                                Click="ImportButton_Click" />
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+
+                            <Border Grid.Column="1" Background="{StaticResource PanelBrush}"
+                                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                                    CornerRadius="14" Padding="16" Margin="12,0,0,0">
+                                <Grid>
+                                    <ScrollViewer Visibility="{Binding HasSelection, Converter={StaticResource BoolToVisibility}}"
+                                                  VerticalScrollBarVisibility="Auto"
+                                                  HorizontalScrollBarVisibility="Disabled"
+                                                  Padding="0,0,6,0">
+                                    <StackPanel>
+                                        <Border Height="154" CornerRadius="10" Background="#0A1318"
+                                                ClipToBounds="True">
+                                            <Grid>
+                                                <Image Source="{Binding SelectedItem.Thumbnail}"
+                                                       Stretch="UniformToFill" />
+                                                <Border Background="#AA071014" CornerRadius="6"
+                                                        Padding="7,3" Margin="9" HorizontalAlignment="Left"
+                                                        VerticalAlignment="Top">
+                                                    <TextBlock Text="{Binding SelectedItem.KindLabel}"
+                                                               FontFamily="{StaticResource UiFont}" FontSize="10"
+                                                               Foreground="{StaticResource TextBrush}" />
+                                                </Border>
+                                            </Grid>
+                                        </Border>
+
+                                        <TextBlock Text="{Binding SelectedItem.DisplayName}"
+                                                   Style="{StaticResource H2}" TextWrapping="Wrap"
+                                                   Margin="1,13,0,3" />
+                                        <TextBlock Text="{Binding SelectedItem.SubtitleText}"
+                                                   Style="{StaticResource MutedText}" />
+
+                                        <Border Style="{StaticResource SeparatorLine}" Margin="0,13" />
+
+                                        <Grid Margin="0,0,0,2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="70" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="类型" Style="{StaticResource MutedText}" />
+                                            <TextBlock Grid.Column="1" Text="{Binding SelectedItem.KindLabel}"
+                                                       Style="{StaticResource BaseText}" FontSize="12" />
+                                        </Grid>
+                                        <Grid Margin="0,6,0,2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="70" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="分辨率" Style="{StaticResource MutedText}" />
+                                            <TextBlock Grid.Column="1" Text="{Binding SelectedItem.ResolutionText}"
+                                                       Style="{StaticResource BaseText}" FontSize="12" />
+                                        </Grid>
+                                        <Grid Margin="0,6,0,2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="70" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="文件大小" Style="{StaticResource MutedText}" />
+                                            <TextBlock Grid.Column="1" Text="{Binding SelectedItem.FileSizeText}"
+                                                       Style="{StaticResource BaseText}" FontSize="12" />
+                                        </Grid>
+                                        <Grid Margin="0,6,0,2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="70" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="添加时间" Style="{StaticResource MutedText}" />
+                                            <TextBlock Grid.Column="1" Text="{Binding SelectedItem.AddedText}"
+                                                       Style="{StaticResource BaseText}" FontSize="12" />
+                                        </Grid>
+
+                                        <TextBlock Text="显示方式" Style="{StaticResource MutedText}"
+                                                   Margin="0,14,0,7" />
+                                        <ListBox ItemsSource="{Binding FitOptions}"
+                                                 SelectedItem="{Binding SelectedFitOption}"
+                                                 Style="{StaticResource PillList}">
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Label}" Style="{StaticResource PillText}" />
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
+
+                                        <Button Content="应用为壁纸" Style="{StaticResource PrimaryButton}"
+                                                Command="{Binding ApplySelectedCommand}" Margin="0,6,0,0" />
+                                        <Button Content="{Binding PauseButtonText}"
+                                                Style="{StaticResource SecondaryButton}"
+                                                Command="{Binding TogglePauseCommand}" Margin="0,8,0,0" />
+                                        <Button Content="从壁纸库删除"
+                                                Style="{StaticResource DangerButton}"
+                                                Command="{Binding DeleteSelectedCommand}" Margin="0,8,0,0" />
+                                    </StackPanel>
+                                    </ScrollViewer>
+
+                                    <StackPanel Visibility="{Binding HasSelection, Converter={StaticResource InverseBoolToVisibility}}"
+                                                VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <Border Width="58" Height="58" CornerRadius="17"
+                                                Background="#102720" HorizontalAlignment="Center">
+                                            <TextBlock Text="&#xE8B7;" FontFamily="Segoe MDL2 Assets"
+                                                       FontSize="23" Foreground="{StaticResource AccentBrush}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <TextBlock Text="选择一张壁纸" Style="{StaticResource SectionTitle}"
+                                                   HorizontalAlignment="Center" Margin="0,14,0,4" />
+                                        <TextBlock Text="在左侧点击卡片查看详情" Style="{StaticResource MutedText}"
+                                                   HorizontalAlignment="Center" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="设置">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,0,18">
+                        <StackPanel Margin="26,22,26,26" MaxWidth="820" HorizontalAlignment="Left">
+                            <TextBlock Text="设置" Style="{StaticResource H1}" />
+                            <TextBlock Text="按你的使用习惯调整壁纸行为，所有设置只保存在本机。"
+                                       Style="{StaticResource MutedText}" Margin="1,4,0,20" />
+
+                            <Border Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}"
+                                    BorderThickness="1" CornerRadius="14" Padding="20" Margin="0,0,0,14">
+                                <StackPanel>
+                                    <TextBlock Text="启动与托盘" Style="{StaticResource SectionTitle}" Margin="0,0,0,14" />
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="开机自动启动" Style="{StaticResource BaseText}" />
+                                            <TextBlock Text="登录 Windows 后在托盘静默启动，继续播放上次的动态壁纸。"
+                                                       Style="{StaticResource MutedText}" Margin="0,3,0,0" />
+                                        </StackPanel>
+                                        <CheckBox Grid.Column="1" Style="{StaticResource ToggleSwitch}"
+                                                  IsChecked="{Binding AutoStart}" VerticalAlignment="Center" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}"
+                                    BorderThickness="1" CornerRadius="14" Padding="20" Margin="0,0,0,14">
+                                <StackPanel>
+                                    <TextBlock Text="播放与性能" Style="{StaticResource SectionTitle}" Margin="0,0,0,14" />
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="全屏应用时暂停" Style="{StaticResource BaseText}" />
+                                            <TextBlock Text="玩游戏、全屏看视频时自动隐藏并暂停解码，退出全屏后恢复。"
+                                                       Style="{StaticResource MutedText}" Margin="0,3,0,0" />
+                                        </StackPanel>
+                                        <CheckBox Grid.Column="1" Style="{StaticResource ToggleSwitch}"
+                                                  IsChecked="{Binding PauseOnFullscreen}" VerticalAlignment="Center" />
+                                    </Grid>
+                                    <Border Style="{StaticResource SeparatorLine}" />
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="使用电池时暂停" Style="{StaticResource BaseText}" />
+                                            <TextBlock Text="拔掉电源后暂停动态壁纸，减少耗电和发热。"
+                                                       Style="{StaticResource MutedText}" Margin="0,3,0,0" />
+                                        </StackPanel>
+                                        <CheckBox Grid.Column="1" Style="{StaticResource ToggleSwitch}"
+                                                  IsChecked="{Binding PauseOnBattery}" VerticalAlignment="Center" />
+                                    </Grid>
+                                    <Border Style="{StaticResource SeparatorLine}" />
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="默认静音视频" Style="{StaticResource BaseText}" />
+                                            <TextBlock Text="动态视频壁纸默认不播放声音，避免突然出声。"
+                                                       Style="{StaticResource MutedText}" Margin="0,3,0,0" />
+                                        </StackPanel>
+                                        <CheckBox Grid.Column="1" Style="{StaticResource ToggleSwitch}"
+                                                  IsChecked="{Binding MuteVideos}" VerticalAlignment="Center" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}"
+                                    BorderThickness="1" CornerRadius="14" Padding="20" Margin="0,0,0,14">
+                                <StackPanel>
+                                    <TextBlock Text="桌面与数据" Style="{StaticResource SectionTitle}" Margin="0,0,0,14" />
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="退出时恢复原壁纸" Style="{StaticResource BaseText}" />
+                                            <TextBlock Text="关闭软件时恢复第一次使用前的桌面壁纸；默认保留当前壁纸。"
+                                                       Style="{StaticResource MutedText}" Margin="0,3,0,0" />
+                                        </StackPanel>
+                                        <CheckBox Grid.Column="1" Style="{StaticResource ToggleSwitch}"
+                                                  IsChecked="{Binding RestoreOriginalOnExit}" VerticalAlignment="Center" />
+                                    </Grid>
+                                    <Border Style="{StaticResource SeparatorLine}" />
+                                    <WrapPanel>
+                                        <Button Content="打开壁纸库文件夹" Style="{StaticResource SecondaryButton}"
+                                                Command="{Binding OpenLibraryFolderCommand}" Margin="0,0,8,8" />
+                                        <Button Content="打开日志文件夹" Style="{StaticResource SecondaryButton}"
+                                                Command="{Binding OpenLogFolderCommand}" Margin="0,0,8,8" />
+                                        <Button Content="恢复原壁纸" Style="{StaticResource SecondaryButton}"
+                                                Command="{Binding RestoreOriginalCommand}" Margin="0,0,8,8" />
+                                        <Button Content="运行环境检测" Style="{StaticResource SecondaryButton}"
+                                                Click="RunDiagnosticsButton_Click" Margin="0,0,8,8" />
+                                        <Button Content="桌面层体检" Style="{StaticResource SecondaryButton}"
+                                                Click="RunDesktopProbeButton_Click" Margin="0,0,8,8"
+                                                ToolTip="检查动态壁纸能否挂在桌面图标下方，报告写入日志目录" />
+                                    </WrapPanel>
+                                    <TextBlock Text="{Binding DataFolder, StringFormat=数据目录：{0}}"
+                                               Style="{StaticResource MutedText}" Margin="0,8,0,0"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Background="#0C211F" BorderBrush="#1A3A35" BorderThickness="1"
+                                    CornerRadius="14" Padding="18">
+                                <StackPanel>
+                                    <TextBlock Text="关于隐私" Style="{StaticResource SectionTitle}"
+                                               Foreground="{StaticResource AccentBrush}" />
+                                    <TextBlock Text="鲸鱼壁纸不上传任何文件，不联网，不收集使用数据。导入壁纸时会复制一份到本机壁纸库，删除壁纸不会删除你的原始文件。"
+                                               Style="{StaticResource MutedText}" TextWrapping="Wrap" Margin="0,6,0,0" />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                <TabItem Header="关于">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="26,22,26,26" MaxWidth="760" HorizontalAlignment="Left">
+                            <StackPanel Orientation="Horizontal">
+                                <Border Width="72" Height="72" CornerRadius="20" Background="#10292A">
+                                    <Image Source="pack://application:,,,/Assets/app.png" Stretch="UniformToFill" />
+                                </Border>
+                                <StackPanel VerticalAlignment="Center" Margin="16,0,0,0">
+                                    <TextBlock Text="鲸鱼壁纸" Style="{StaticResource H1}" />
+                                    <TextBlock Text="{Binding AppVersion, StringFormat=WhalePaper v{0}}"
+                                               Style="{StaticResource MutedText}" Margin="1,2,0,0" />
+                                </StackPanel>
+                            </StackPanel>
+
+                            <TextBlock Text="一个安静、轻量、完全本地的 Windows 桌面壁纸工具。"
+                                       Style="{StaticResource BaseText}" FontSize="14" Margin="0,22,0,6" />
+                            <TextBlock Text="支持 JPG、PNG、BMP、GIF、WebP、TIFF 等图片，以及 MP4、WMV、AVI、MOV 等常见视频。静态壁纸交给 Windows 渲染，动态壁纸在桌面图标后方播放；全屏、锁屏、电池供电时自动暂停。"
+                                       Style="{StaticResource MutedText}" TextWrapping="Wrap" LineHeight="21" />
+
+                            <Border Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}"
+                                    BorderThickness="1" CornerRadius="14" Padding="20" Margin="0,24,0,14">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel>
+                                        <TextBlock Text="完全本地" Style="{StaticResource SectionTitle}" />
+                                        <TextBlock Text="不联网、无账号、无遥测" Style="{StaticResource MutedText}" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="轻量设计" Style="{StaticResource SectionTitle}" />
+                                        <TextBlock Text="静态零渲染，动态按需硬解" Style="{StaticResource MutedText}" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <TextBlock Text="技术说明" Style="{StaticResource SectionTitle}" Margin="0,10,0,6" />
+                            <TextBlock Text="基于 Windows .NET Framework 4.8 与 WPF 构建，不需要额外安装运行库。动态视频使用 Windows Media Foundation 播放，硬件解码取决于显卡和系统编码器；极少数编码格式可能无法播放，此时会保留静态海报。"
+                                       Style="{StaticResource MutedText}" TextWrapping="Wrap" LineHeight="21" />
+
+                            <TextBlock Text="数据位置" Style="{StaticResource SectionTitle}" Margin="0,20,0,6" />
+                            <TextBlock Text="{Binding DataFolder}" Style="{StaticResource MutedText}"
+                                       TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding LogFolder}" Style="{StaticResource MutedText}"
+                                       TextWrapping="Wrap" Margin="0,2,0,0" />
+
+                            <TextBlock Text="鲸鱼壁纸 · 本地免费使用。图标和默认壁纸为自制素材。"
+                                       Style="{StaticResource MutedText}" Margin="0,26,0,0" />
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+            </TabControl>
+
+            <!-- status bar -->
+            <Border Grid.Row="2" Grid.ColumnSpan="2" Background="#0B141A"
+                    BorderBrush="{StaticResource BorderSoftBrush}" BorderThickness="0,1,0,0">
+                <Grid Margin="16,0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Ellipse Width="7" Height="7" Margin="0,0,8,0">
+                            <Ellipse.Style>
+                                <Style TargetType="Ellipse">
+                                    <Setter Property="Fill" Value="{StaticResource AccentBrush}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsPaused}" Value="True">
+                                            <Setter Property="Fill" Value="#D9A45B" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Ellipse.Style>
+                        </Ellipse>
+                        <TextBlock Text="{Binding StatusText}" Style="{StaticResource MutedText}"
+                                   FontSize="11" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
+                                VerticalAlignment="Center">
+                        <Button Content="{Binding PauseButtonText}" Style="{StaticResource SecondaryButton}"
+                                Command="{Binding TogglePauseCommand}" Height="25" Padding="10,3"
+                                FontSize="11" Margin="0,0,7,0" />
+                        <Button Content="日志" Style="{StaticResource WindowButton}" Width="36" Height="25"
+                                FontFamily="{StaticResource UiFont}" FontSize="10"
+                                Click="OpenLogButton_Click" ToolTip="打开日志文件夹" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- busy overlay -->
+            <Border Grid.RowSpan="3" Grid.ColumnSpan="2" Background="#C4091015"
+                    Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}">
+                <Border Width="360" Background="#13232B" BorderBrush="{StaticResource BorderBrush}"
+                        BorderThickness="1" CornerRadius="14" Padding="22"
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <StackPanel>
+                        <TextBlock Text="{Binding BusyText}" Style="{StaticResource BaseText}"
+                                   FontSize="13" TextWrapping="Wrap" />
+                        <ProgressBar Value="{Binding BusyProgress, Mode=OneWay}" Maximum="100" Height="5"
+                                     Margin="0,14,0,0" Foreground="{StaticResource AccentBrush}"
+                                     Background="#1E323B" BorderThickness="0" />
+                        <TextBlock Text="所有文件只在本机处理" Style="{StaticResource MutedText}"
+                                   Margin="0,10,0,0" />
+                    </StackPanel>
+                </Border>
+            </Border>
+        </Grid>
+    </Border>
+</Window>
