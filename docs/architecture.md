@@ -15,12 +15,18 @@ WhalePaper 将本地媒体库、静态壁纸和动态桌面宿主分开处理。
 ~~~text
 媒体文件
   → MfSourceReader（Media Foundation 解码、RGB32 / RGB24）
-  → MfVideoPlayback / FramePlayback（媒体时间戳、循环、暂停）
+  → MfVideoPlayback 解码线程（复制 RGB、立即释放 MF sample）
+  → 有界预取队列（最多 64 个缓冲，总 RGB 复制缓冲不超过 512MiB）
+  → 独立显示线程（跨循环的连续时钟、高精度等待、暂停）
   → DibPaint（行布局、GDI）
   → WallpaperHostWindow（桌面图标后方的 Win32 窗口）
 ~~~
 
-绘制上限为 30fps；高帧率源按时间戳跳过中间帧，避免将 60fps 内容按 30fps 慢放。当前没有音频输出。
+绘制调度上限为 240fps；较高帧率源按时间戳选择输出帧。实际速率取决于解码、RGB 转换、CPU 复制、GDI 和显示器，不能把上限当作性能保证。当前没有音频输出。
+
+解码线程在到达文件末尾时执行 seek，显示线程继续消费已预取的帧；每一轮媒体时间戳映射到同一条连续时间线，不重置显示时钟。队列按约 400ms 计算容量，再受帧数和内存预算限制，预算包含正在解码和正在显示的帧。复制后的缓冲归播放器所有，MF sample 在入队前释放。暂停保留缓冲；结束后由最后退出的工作线程清理队列和原生内存。
+
+Windows 支持时使用高精度 one-shot waitable timer 和最后约 0.2ms 的短等待，不依赖被遮挡的后台窗口获得 timeBeginPeriod 精度。创建或等待失败时回退到 Sleep；线程退出和 Dispose 后关闭句柄。若持续解码吞吐低于素材帧率，缓冲最终仍会耗尽，应选择较低帧率素材。
 
 ## 桌面集成
 

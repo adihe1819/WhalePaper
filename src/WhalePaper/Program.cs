@@ -28,6 +28,12 @@ namespace WhalePaper
                     return;
                 }
 
+                if (Array.Exists(args, arg => string.Equals(arg, "--playback-probe", StringComparison.OrdinalIgnoreCase)))
+                {
+                    Environment.ExitCode = PlaybackProbeService.Run(args);
+                    return;
+                }
+
                 if (Array.Exists(args, arg => string.Equals(arg, "--media-probe", StringComparison.OrdinalIgnoreCase)))
                 {
                     var index = Array.FindIndex(

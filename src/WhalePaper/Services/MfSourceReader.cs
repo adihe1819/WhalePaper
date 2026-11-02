@@ -479,7 +479,10 @@ namespace WhalePaper.Services
             }
 
             var fps = numerator / (double)denominator;
-            if (fps < 1 || fps > 240)
+            // A 240-fps MP4 can be reported as 5000000/20833 (~240.00384).
+            // Source metadata must not fall back to 30 because of that rounding.
+            // The presenter separately limits its output to 240 fps.
+            if (fps < 1 || fps > 1000)
             {
                 return fallback > 0 ? fallback : 30;
             }

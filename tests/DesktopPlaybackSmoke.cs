@@ -48,7 +48,7 @@ internal static class DesktopPlaybackSmoke
             var painted = Frames(host) - before;
             Console.WriteLine("PAINTED frames=" + painted + " inMs=" + interval.ElapsedMilliseconds);
             Require(painted >= 10, "continuous painting");
-            if (!isGif) { Require(painted <= 75, "30fps paint cap"); }
+            if (!isGif) { Require(painted <= Math.Ceiling(interval.Elapsed.TotalSeconds * 240) + 4, "240fps maximum paint cap"); }
             Require((bool)Call(host, "EnsureLayer"), "parent and icon-list Z order during playback");
 
             Call(host, "Pause");

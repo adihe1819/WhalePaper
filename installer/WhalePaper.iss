@@ -2,7 +2,7 @@
 ; Build with Inno Setup 6.0.5+ (supply ISCC.exe to build.ps1 or install it separately)
 
 #define MyAppName "鲸鱼壁纸"
-#define MyAppVersion "1.0.7"
+#define MyAppVersion "1.0.8"
 #define MyAppPublisher "WhalePaper"
 #define MyAppExeName "WhalePaper.exe"
 #define MyAppId "{{6D6D8C6A-6E1D-4D8E-9F5A-8C7B4A2D1E33}"

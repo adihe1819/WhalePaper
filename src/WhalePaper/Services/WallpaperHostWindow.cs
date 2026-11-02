@@ -739,7 +739,7 @@ namespace WhalePaper.Services
 
             if (item.Kind == WallpaperKind.Video)
             {
-                return StartPlayback(new MfVideoPlayback(item.StoredPath, 30));
+                return StartPlayback(new MfVideoPlayback(item.StoredPath, 240));
             }
 
             return false;

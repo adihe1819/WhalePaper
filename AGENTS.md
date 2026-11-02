@@ -26,6 +26,7 @@ Build outputs are under the projects' bin/Release/net48 directories; distributab
 - Interop/MfInterop.cs: native COM declarations; native vtable layout must match Windows SDK headers.
 - Services/AppPaths.cs, LibraryService.cs and SettingsService.cs: local data.
 - tests/Verify-Media.ps1: real COM, media/seek and invalid-input regression.
+- tests/Verify-Playback.ps1 and --playback-probe: bounded decode-ahead, loop timing and pause/resume regression without desktop attachment.
 - tests/DesktopPlaybackSmoke.cs: real desktop host, continuous painting and pause/resume checks.
 - installer: Inno Setup scripts; preserve the UTF-8 BOM in the simplified Chinese language file.
 - tools: optional asset/sample generators; not needed for ordinary compilation.

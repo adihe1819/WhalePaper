@@ -15,8 +15,8 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <StartupObject>WhalePaper.Program</StartupObject>
     <Deterministic>true</Deterministic>
-    <Version>1.0.7</Version>
-    <FileVersion>1.0.7.0</FileVersion>
+    <Version>1.0.8</Version>
+    <FileVersion>1.0.8.0</FileVersion>
     <Company>WhalePaper</Company>
     <Product>鲸鱼壁纸</Product>
     <Description>本地静态与动态桌面壁纸</Description>

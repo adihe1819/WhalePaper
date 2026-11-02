@@ -8,6 +8,7 @@
 
 <p align="center">
   <a href="https://github.com/adihe1819/WhalePaper/releases/latest">下载最新版</a> ·
+  <a href="docs/wallpapers.md">壁纸素材</a> ·
   <a href="docs/testing.md">验证记录</a> ·
   <a href="https://github.com/adihe1819/WhalePaper/issues">反馈问题</a>
 </p>
@@ -24,7 +25,7 @@ WhalePaper 是一个 Windows 本地壁纸工具。导入自己的媒体文件，
 - 静态图片交给 Windows 显示；动态播放失败时保留静态海报。
 - 壁纸、缓存、设置和日志保存在本机；导入会复制文件，删除库内条目不会删除原文件。
 
-当前版本为 **1.0.7**。视频循环、暂停与恢复、桌面图标可见和可选中，已在 Windows 11 25H2 上实测。完整范围见[验证记录](docs/testing.md)。
+当前版本为 **1.0.8**。本版加入有界解码预取、连续循环时钟和后台高精度调度，改善视频循环停顿与高帧率播放。支持最高 240fps 的绘制调度，实际流畅度取决于素材、解码与绘制吞吐和显示器，**不保证任意设备或分辨率达到 240fps**。改动见[更新说明](docs/release-notes-1.0.8.md)，实测范围见[验证记录](docs/testing.md)。
 
 ## 下载与使用
 
@@ -32,8 +33,8 @@ WhalePaper 是一个 Windows 本地壁纸工具。导入自己的媒体文件，
 
 | 文件 | 用途 |
 | --- | --- |
-| WhalePaper-Setup-1.0.7-x64.exe | 安装版 |
-| WhalePaper-1.0.7-portable-x64.zip | 免安装版 |
+| WhalePaper-Setup-1.0.8-x64.exe | 安装版 |
+| WhalePaper-1.0.8-portable-x64.zip | 免安装版 |
 | SHA256.txt | 发布包校验值 |
 
 安装版运行安装程序后启动“鲸鱼壁纸”。免安装版先解压到可写文件夹，再运行 **WhalePaper-portable.cmd**，数据会保存在旁边的 data 文件夹。
@@ -46,8 +47,21 @@ WhalePaper 是一个 Windows 本地壁纸工具。导入自己的媒体文件，
 运行需要 **64 位 Windows 10/11 和 .NET Framework 4.8**，用户无需安装 .NET SDK。当前以 Windows 11 为主要适配平台；Windows 10 尽力兼容，未完成同等验收。安装包尚未进行代码签名，可将下载文件的 SHA-256 与同次发布的 SHA256.txt 核对。
 
 ~~~powershell
-Get-FileHash .\WhalePaper-Setup-1.0.7-x64.exe -Algorithm SHA256
+Get-FileHash .\WhalePaper-Setup-1.0.8-x64.exe -Algorithm SHA256
 ~~~
+
+### 可下载的壁纸素材
+
+视频单独作为 Release 附件提供，程序包内不捆绑这些大文件。下载后在鲸鱼壁纸中导入即可；预览、规格和校验值见[素材页](docs/wallpapers.md)。
+
+| 素材 | 视频 |
+| --- | --- |
+| 清华园雪夜 | [2560×1440 / 120fps，30 秒静音循环](https://github.com/adihe1819/WhalePaper/releases/download/v1.0.8/Tsinghua-Snow-2K-120fps.mp4) |
+| 月下动漫人物 | [2560×1440 / 60fps](https://github.com/adihe1819/WhalePaper/releases/download/v1.0.8/Moonlight-Anime-2K-60fps.mp4) |
+
+### 切回桌面时保持连续运动
+
+如果希望浏览网页或使用全屏应用时壁纸仍持续运行，在“设置”中关闭 **全屏应用时暂停**。主窗口关闭到托盘后，播放会继续。电池、锁屏、休眠和远程会话仍按各自策略处理，不会因关闭这一选项而一并关闭。
 
 ## 支持格式与限制
 
@@ -57,7 +71,9 @@ Get-FileHash .\WhalePaper-Setup-1.0.7-x64.exe -Algorithm SHA256
 | 动图 | GIF |
 | 视频 | MP4、M4V、WMV、AVI、MOV；实际支持取决于 Windows Media Foundation 解码器，建议先试 H.264 MP4 |
 
-- 视频目前静音，尚无音频输出；绘制最高 30fps，按媒体时间戳播放。
+- 视频目前静音，尚无音频输出；按媒体时间戳播放，绘制调度上限为 240fps。解码持续跟不上时仍可能掉帧或卡顿，建议先尝试适合设备的 60/120fps 素材。
+- 解码和绘制使用独立线程，循环 seek 期间播放已预取的帧。RGB 复制缓冲最多 64 帧、512MiB；该限制不包含系统解码器、窗口和其他应用内存。
+- Windows 支持高精度 waitable timer 时用于后台帧调度，无法创建时回退到普通等待；它不能消除解码或绘制本身的性能瓶颈。
 - 动态画面目前只在主显示器播放；尚不支持每屏独立动态壁纸。
 - 不支持 HTML/WebGL、Wallpaper Engine 私有格式或 DRM 视频。
 - 应用动态壁纸时，主窗口可能短暂隐藏数秒，用于检查桌面挂载和实际像素。

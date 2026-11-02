@@ -37,6 +37,16 @@ jobs:
         shell: pwsh
         run: ./build.ps1 -SkipInstaller
 
+      - name: Parse regression scripts
+        shell: pwsh
+        run: |
+          foreach ($script in @('./tests/Verify-Media.ps1', './tests/Verify-Playback.ps1')) {
+            $parseErrors = $null
+            $tokens = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $script), [ref]$tokens, [ref]$parseErrors)
+            if ($parseErrors.Count) { throw ($parseErrors | Out-String) }
+          }
+
       # CI has no representative interactive desktop. Do not run media/desktop
       # probes here or present this build result as playback/icon validation.
 

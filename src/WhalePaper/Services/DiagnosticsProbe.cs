@@ -15,7 +15,7 @@ namespace WhalePaper.Services
     /// </summary>
     internal static class DiagnosticsProbe
     {
-        public const string BuildTag = "1.0.7";
+        public const string BuildTag = "1.0.8";
 
         private static readonly object Sync = new object();
         private static string _lastFullscreenSignature;
@@ -25,7 +25,7 @@ namespace WhalePaper.Services
 
         public static void LogBuild(string[] args)
         {
-            AppLog.Info("==== BUILD " + BuildTag + " (native layered host + RGB32/RGB24, no-clip) ====");
+            AppLog.Info("==== BUILD " + BuildTag + " (bounded decode-ahead + continuous clock + high-resolution timer) ====");
             AppLog.Info("Build env: OS=" + Environment.OSVersion.VersionString +
                         " 64bitOS=" + Environment.Is64BitOperatingSystem +
                         " 64bitProc=" + Environment.Is64BitProcess +

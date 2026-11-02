@@ -21,7 +21,7 @@ namespace WhalePaper.Services
             report.AppendLine("  进程：" + (Environment.Is64BitProcess ? "64-bit" : "32-bit") +
                                "，CLR：" + Environment.Version);
             report.AppendLine("  程序：" + StartupService.ExecutablePath);
-            report.AppendLine("  构建：1.0.7（修正 COM 方法表 + 首帧解码 + 原生接口自检）");
+            report.AppendLine("  构建：1.0.8（解码预取 + 连续循环时钟 + 高精度调度）");
             report.AppendLine("  数据目录：" + AppPaths.DataRoot);
             report.AppendLine();
 
